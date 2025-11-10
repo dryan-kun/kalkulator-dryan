@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Netflix 3D</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #000000, #141414);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        /* Poster film animasi di background (seperti thumbnail Netflix) */
+        .poster {
+            position: absolute;
+            width: 60px;
+            height: 90px;
+            background: linear-gradient(145deg, #e50914, #b81d24);
+            border-radius: 5px;
+            animation: scroll 10s infinite linear;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        .poster:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; }
+        .poster:nth-child(2) { top: 50%; left: -10%; animation-delay: 3s; }
+        .poster:nth-child(3) { top: 70%; left: -10%; animation-delay: 6s; }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(120vw); }
+        }
+        /* Logo N Netflix kecil */
+        .netflix-logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+            color: #e50914;
+            font-weight: bold;
+            text-shadow: 0 0 10px #e50914;
+        }
+        .calculator {
+            background: linear-gradient(145deg, #2c2c2c, #000000);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), inset 0 5px 10px rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            width: 400px;
+            position: relative;
+            transform: rotateX(10deg) rotateY(-10deg) translateZ(50px);
+            transition: transform 0.3s ease;
+            border: 3px solid #e50914;
+        }
+        .calculator:hover {
+            transform: rotateX(0deg) rotateY(0deg) translateZ(0px);
+        }
+        .display {
+            background: linear-gradient(145deg, #1a1a1a, #333333);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            font-size: 1.8em;
+            color: #ffffff;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.5);
+            border: 2px solid #e50914;
+            overflow: hidden;
+            min-height: 50px;
+        }
+        .display span {
+            display: inline-block;
+            animation: typeIn 0.5s ease-out;
+        }
+        @keyframes typeIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .mode-toggle {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #e50914;
+            font-size: 1em;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        button {
+            background: linear-gradient(145deg, #404040, #606060);
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1em;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            transform: translateY(0) scale(1);
+        }
+        button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(145deg, #e50914, #b81d24);
+        }
+        button:active {
+            transform: translateY(2px) scale(0.95);
+        }
+        .operator {
+            background: linear-gradient(145deg, #e50914, #b81d24);
+        }
+        .scientific {
+            background: linear-gradient(145deg, #666666, #888888);
+        }
+        .equal {
+            background: linear-gradient(145deg, #00b894, #00cec9);
+            grid-column: span 2;
+        }
+        .clear {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a24);
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo Netflix -->
+    <div class="netflix-logo">N</div>
+    
+    <!-- Poster film animasi -->
+    <div class="poster"></div>
+    <div class="poster"></div>
+    <div class="poster"></div>
+    
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="mode-toggle">
+            Mode: <button id="modeBtn" onclick="toggleMode()">Deg</button>
+        </div>
+        <div class="buttons">
+            <button class="clear" onclick="clearAll()">AC</button>
+            <button onclick="backspace()">⌫</button>
+            <button class="scientific" onclick="appendToDisplay('Math.PI')">π</button>
+            <button class="scientific" onclick="appendToDisplay('Math.E')">e</button>
+            <button class="scientific" onclick="appendToDisplay('Math.sqrt(')">√</button>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button class="scientific" onclick="appendToDisplay('Math.sin(')">sin</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('*')">×</button>
+            <button class="scientific" onclick="appendToDisplay('Math.cos(')">cos</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <button class="scientific" onclick="appendToDisplay('Math.tan(')">tan</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button class="scientific" onclick="appendToDisplay('**')">^</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button class="scientific" onclick="appendToDisplay('Math.log10(')">log</button>
+            <button class="scientific" onclick="appendToDisplay('Math.log(')">ln</button>
+            <button class="scientific" onclick="appendToDisplay('Math.asin(')">asin</button>
+            <button class="scientific" onclick="appendToDisplay('Math.acos(')">acos</button>
+            <button class="scientific" onclick="appendToDisplay('Math.atan(')">atan</button>
+            <button class="scientific" onclick="factorial()">!</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '';
+        let isDegree = true;
+
+        function appendToDisplay(value) {
+            currentInput += value;
+            updateDisplay();
+        }
+
+        function clearAll() {
+            currentInput = '';
+            updateDisplay();
+        }
+
+        function backspace() {
+            currentInput = currentInput.slice(0, -1);
+            updateDisplay();
+        }
+
+        function toggleMode() {
+            isDegree = !isDegree;
+            document.getElementById('modeBtn').textContent = isDegree ? 'Deg' : 'Rad';
+        }
+
+        function factorial() {
+            let num = parseFloat(currentInput);
+            if (num < 0 || !Number.isInteger(num)) {
+                display.innerHTML = '<span>Error</span>';
+                currentInput = '';
+                return;
+            }
+            let result = 1;
+            for (let i = 1; i <= num; i++) result *= i;
+            currentInput = result.toString();
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                let expression = currentInput;
+                if (isDegree) {
+                    expression = expression.replace(/Math\.sin\(/g, 'Math.sin(Math.PI/180*');
+                    expression = expression.replace(/Math\.cos\(/g, 'Math.cos(Math.PI/180*');
+                    expression = expression.replace(/Math\.tan\(/g, 'Math.tan(Math.PI/180*');
+                }
+                currentInput = eval(expression).toString();
+                updateDisplay();
+            } catch (error) {
+                display.innerHTML = '<span>Error</span>';
+                currentInput = '';
+            }
+        }
+
+        function updateDisplay() {
+            display.innerHTML = currentInput || '0';
+        }
+    </script>
+</body>
+</html>
